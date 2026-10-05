@@ -13,7 +13,7 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  themeMode: 'system',
+  themeMode: 'light',
   theme: Theme.light,
   isDark: false,
   setThemeMode: () => {},
@@ -21,7 +21,7 @@ const ThemeContext = createContext<ThemeContextType>({
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const systemColorScheme = useColorScheme();
-  const [themeMode, setThemeModeState] = useState<ThemeMode>('system');
+  const [themeMode, setThemeModeState] = useState<ThemeMode>('light');
 
   useEffect(() => {
     AsyncStorage.getItem(ASYNC_STORAGE_KEYS.themeMode).then((saved) => {
