@@ -43,7 +43,7 @@ export function SafeScreen({
         <ScrollView
           style={{ flex: 1 }}
           contentContainerStyle={[
-            { paddingBottom: padBottom ? insets.bottom + 90 : insets.bottom + 16 },
+            { paddingBottom: padBottom ? insets.bottom + 16 : insets.bottom + 16 },
             contentStyle,
           ]}
           showsVerticalScrollIndicator={false}
@@ -68,7 +68,7 @@ export function SafeScreen({
     <View
       style={[
         containerStyle,
-        { paddingBottom: padBottom ? insets.bottom + 80 : 0 },
+        { paddingBottom: padBottom ? insets.bottom : 0 },
         style,
       ]}
     >
