@@ -61,6 +61,10 @@ export const ProductCard = memo(({ product, onPress, style, layout = 'grid' }: P
   const imageSource = product.localImage ?? (product.images && product.images.length > 0 ? { uri: product.images[0] } : null);
   const hasImage = Boolean(imageSource);
 
+  if (!hasImage) {
+    return null;
+  }
+
   if (layout === 'list') {
     return (
       <AnimatedTouchable

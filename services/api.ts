@@ -20,8 +20,8 @@ let mockEnquiries: Enquiry[] = [
     name: 'Dr. Suresh Mehta',
     phone: '+91 98231 45678',
     email: 'dr.mehta@dermatology.org',
-    productId: 'prod-1',
-    productName: 'Radiance Pro Niacinamide 10% Serum',
+    productId: 'prod-9',
+    productName: 'Facecure Cream',
     companyName: 'Mehta Skin & Laser Center',
     enquiryType: 'Hospital / Clinic Distribution',
     message: 'Interested in stocking 200 units for our clinical patients. Please share wholesale tariff sheet.',
@@ -33,8 +33,8 @@ let mockEnquiries: Enquiry[] = [
     name: 'Ananya Sharma',
     phone: '+91 94123 78901',
     email: 'ananya.care@pharmacy.in',
-    productId: 'prod-2',
-    productName: 'Hydra-Barrier Ceramide Intense Cream',
+    productId: 'prod-11',
+    productName: 'Facecure Glow Shine Cream',
     companyName: 'Wellness Chemist Chain',
     enquiryType: 'Retail Stockist / Pharmacy',
     message: 'Requesting distributor pricing for NCR region pharmacies.',
@@ -45,13 +45,21 @@ let mockEnquiries: Enquiry[] = [
 
 // ─── Products ───────────────────────────────────────────────────────────────
 
+const hasProductImage = (p: Product) =>
+  Boolean(
+    p.localImage ||
+      (Array.isArray(p.images) &&
+        p.images.some((img) => typeof img === 'string' && img.trim().length > 0))
+  );
+
 export async function getProducts(): Promise<Product[]> {
+  let products: Product[] = [];
   if (isFirebaseConfigured) {
     try {
       const q = query(collection(db, 'products'), where('isActive', '==', true));
       const snapshot = await getDocs(q);
       if (!snapshot.empty) {
-        return snapshot.docs.map((docSnap) => {
+        products = snapshot.docs.map((docSnap) => {
           const data = docSnap.data();
           return {
             id: docSnap.id,
@@ -84,14 +92,17 @@ export async function getProducts(): Promise<Product[]> {
   }
 
   // Fallback to local mock data
-  return Promise.resolve(
-    MOCK_PRODUCTS.filter((p) => p.isActive !== false).map((p) => ({
+  if (products.length === 0) {
+    products = MOCK_PRODUCTS.filter((p) => p.isActive !== false).map((p) => ({
       ...p,
       category: p.category || p.categoryName || 'General',
       activeIngredients: p.activeIngredients || p.ingredients,
       howToUse: p.howToUse || p.usage,
-    }))
-  );
+    }));
+  }
+
+  // Filter out any blank products without images
+  return products.filter(hasProductImage);
 }
 
 export async function getFeaturedProducts(): Promise<Product[]> {
@@ -188,10 +199,16 @@ export async function getCategories(): Promise<Category[]> {
     }
   }
 
+  const products = await getProducts();
   return Promise.resolve(
-    MOCK_CATEGORIES.filter((c) => c.isActive !== false).sort(
-      (a, b) => (a.order || 0) - (b.order || 0)
-    )
+    MOCK_CATEGORIES.filter((c) => c.isActive !== false)
+      .map((c) => ({
+        ...c,
+        productCount: products.filter(
+          (p) => p.categoryId === c.id || p.category?.toLowerCase() === c.name.toLowerCase()
+        ).length,
+      }))
+      .sort((a, b) => (a.order || 0) - (b.order || 0))
   );
 }
 
