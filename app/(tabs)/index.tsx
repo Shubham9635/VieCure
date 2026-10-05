@@ -24,6 +24,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { useFavorites } from '../../contexts/FavoritesContext';
 import { api } from '../../services/api';
 import { Product, Category } from '../../types';
+import { getCategoryImage } from '../../constants/categoryImages';
 
 const { width } = Dimensions.get('window');
 
@@ -189,48 +190,61 @@ export default function HomeScreen() {
                 <CategoryCardSkeleton key={i} />
               ))
             ) : (
-              categories.map((cat) => (
-                <TouchableOpacity
-                  key={cat.id}
-                  activeOpacity={0.85}
-                  style={[
-                    styles.categoryCard,
-                    {
-                      backgroundColor: isDark ? Colors.surfaceDark : '#FFFFFF',
-                      borderColor: isDark ? Colors.borderDark : Colors.borderLight,
-                    },
-                  ]}
-                  onPress={() => router.push(`/category/${cat.id}`)}
-                >
-                  <View
+              categories.map((cat) => {
+                const catImg = getCategoryImage(cat);
+                return (
+                  <TouchableOpacity
+                    key={cat.id}
+                    activeOpacity={0.85}
                     style={[
-                      styles.categoryIconCircle,
-                      { backgroundColor: isDark ? 'rgba(26,92,58,0.2)' : Colors.sageLight },
+                      styles.categoryCard,
+                      {
+                        backgroundColor: isDark ? Colors.surfaceDark : '#FFFFFF',
+                        borderColor: isDark ? Colors.borderDark : Colors.borderLight,
+                      },
                     ]}
+                    onPress={() => router.push(`/category/${cat.id}`)}
                   >
-                    <Text style={styles.categoryLetter}>
-                      {cat.name.charAt(0)}
+                    {catImg ? (
+                      <View style={styles.categoryImageWrap}>
+                        <Image
+                          source={catImg}
+                          style={styles.categoryImage}
+                          resizeMode="contain"
+                        />
+                      </View>
+                    ) : (
+                      <View
+                        style={[
+                          styles.categoryIconCircle,
+                          { backgroundColor: isDark ? 'rgba(26,92,58,0.2)' : Colors.sageLight },
+                        ]}
+                      >
+                        <Text style={styles.categoryLetter}>
+                          {cat.name.charAt(0)}
+                        </Text>
+                      </View>
+                    )}
+                    <Text
+                      style={[
+                        styles.categoryName,
+                        { color: isDark ? Colors.textPrimaryDark : Colors.textPrimaryLight },
+                      ]}
+                      numberOfLines={1}
+                    >
+                      {cat.name}
                     </Text>
-                  </View>
-                  <Text
-                    style={[
-                      styles.categoryName,
-                      { color: isDark ? Colors.textPrimaryDark : Colors.textPrimaryLight },
-                    ]}
-                    numberOfLines={1}
-                  >
-                    {cat.name}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.categoryCount,
-                      { color: isDark ? Colors.textSecondaryDark : Colors.textSecondaryLight },
-                    ]}
-                  >
-                    {cat.productCount} Formulations
-                  </Text>
-                </TouchableOpacity>
-              ))
+                    <Text
+                      style={[
+                        styles.categoryCount,
+                        { color: isDark ? Colors.textSecondaryDark : Colors.textSecondaryLight },
+                      ]}
+                    >
+                      {cat.productCount} Formulations
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })
             )}
           </ScrollView>
         </View>
@@ -447,17 +461,28 @@ const styles = StyleSheet.create({
     gap: Spacing.sm + 4,
   },
   categoryCard: {
-    width: 130,
+    width: 136,
     padding: Spacing.md,
     borderRadius: Radius.lg,
     borderWidth: 1,
     alignItems: 'center',
     ...Shadow.sm,
   },
+  categoryImageWrap: {
+    width: 72,
+    height: 72,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.sm,
+  },
+  categoryImage: {
+    width: 68,
+    height: 68,
+  },
   categoryIconCircle: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.sm,

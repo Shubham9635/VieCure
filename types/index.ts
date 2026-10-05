@@ -30,6 +30,7 @@ export interface Category {
   name: string;
   description?: string;
   image?: string;
+  localImage?: any;
   productCount: number;
   isActive?: boolean;
   order?: number;

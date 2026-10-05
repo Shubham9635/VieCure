@@ -6,6 +6,7 @@ import {
   FlatList,
   TouchableOpacity,
   RefreshControl,
+  Image,
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
@@ -17,6 +18,7 @@ import { FontFamily, FontSize, Radius, Spacing } from '../../constants/theme';
 import { useTheme } from '../../contexts/ThemeContext';
 import { api } from '../../services/api';
 import { Product, Category } from '../../types';
+import { getCategoryImage } from '../../constants/categoryImages';
 
 export default function CategoryProductsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -89,6 +91,13 @@ export default function CategoryProductsScreen() {
             },
           ]}
         >
+          {getCategoryImage(category) && (
+            <Image
+              source={getCategoryImage(category)}
+              style={styles.bannerImage}
+              resizeMode="contain"
+            />
+          )}
           <Text
             style={[
               styles.bannerDesc,
@@ -163,8 +172,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     borderBottomWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
+  bannerImage: {
+    width: 52,
+    height: 52,
   },
   bannerDesc: {
+    flex: 1,
     fontSize: FontSize.xs + 1,
     lineHeight: 18,
     fontFamily: FontFamily.medium,

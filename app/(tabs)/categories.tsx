@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   Dimensions,
+  Image,
 } from 'react-native';
 import { router } from 'expo-router';
 import { ChevronRight, Sparkles } from 'lucide-react-native';
@@ -17,6 +18,7 @@ import { FontFamily, FontSize, Radius, Spacing, Shadow } from '../../constants/t
 import { useTheme } from '../../contexts/ThemeContext';
 import { api } from '../../services/api';
 import { Category, Product } from '../../types';
+import { getCategoryImage } from '../../constants/categoryImages';
 
 const { width } = Dimensions.get('window');
 
@@ -127,18 +129,28 @@ export default function CategoriesScreen() {
                 <View style={styles.headerRow}>
                   <View style={styles.titleColumn}>
                     <View style={styles.iconAndTitle}>
-                      <View
-                        style={[
-                          styles.catInitialBadge,
-                          {
-                            backgroundColor: isDark
-                              ? 'rgba(26,92,58,0.25)'
-                              : Colors.sageLight,
-                          },
-                        ]}
-                      >
-                        <Text style={styles.catInitialText}>{item.name.charAt(0)}</Text>
-                      </View>
+                      {getCategoryImage(item) ? (
+                        <View style={styles.catImageBadge}>
+                          <Image
+                            source={getCategoryImage(item)}
+                            style={styles.catThumbImage}
+                            resizeMode="contain"
+                          />
+                        </View>
+                      ) : (
+                        <View
+                          style={[
+                            styles.catInitialBadge,
+                            {
+                              backgroundColor: isDark
+                                ? 'rgba(26,92,58,0.25)'
+                                : Colors.sageLight,
+                            },
+                          ]}
+                        >
+                          <Text style={styles.catInitialText}>{item.name.charAt(0)}</Text>
+                        </View>
+                      )}
                       <View>
                         <Text
                           style={[
@@ -282,6 +294,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
+  },
+  catImageBadge: {
+    width: 48,
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  catThumbImage: {
+    width: 46,
+    height: 46,
   },
   catInitialBadge: {
     width: 44,
